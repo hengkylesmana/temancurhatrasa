@@ -5,14 +5,16 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const router = express.Router();
+// const router = express.Router(); // Router tidak lagi diperlukan, kita sederhanakan
 
 app.use(cors());
 app.use(express.json());
 
 const GEMINI_API_KEY = process.env.GOOGLE_GEMINI_API_KEY;
 
-router.post('/', async (req, res) => {
+// PERUBAHAN: Langsung gunakan app.post di rute dasar ('/')
+// Netlify akan menangani penerusan dari /api/chat ke sini
+app.post('/', async (req, res) => {
     if (!GEMINI_API_KEY) {
         return res.status(500).json({ error: 'API Key belum diatur di server.' });
     }
@@ -59,9 +61,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// --- INI BAGIAN YANG DIPERBAIKI ---
-// Baris ini memberitahu Netlify cara yang benar untuk menangani rute.
-app.use('/.netlify/functions/chat', router);
-// ------------------------------------
+// Baris app.use(...) yang lama sudah dihapus
 
+// Pembungkusnya tetap sama, tetapi sekarang membungkus app yang lebih sederhana
 module.exports.handler = serverless(app);
